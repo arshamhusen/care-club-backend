@@ -21,8 +21,10 @@
  })
 
  //Routers
- const CenterRouter = require("./routes/centers")
- app.use("/centers", CenterRouter)
+ const CenterRouter = require("./routes/centers");
+ const UserRouter = require("./routes/users");
+ app.use("/centers", CenterRouter);
+ app.use("/users", UserRouter);
  
  // route our app
  app.get('/', function(req, res) {
