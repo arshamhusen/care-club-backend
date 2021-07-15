@@ -23,8 +23,11 @@
  //Routers
  const CenterRouter = require("./routes/centers");
  const UserRouter = require("./routes/users");
+ const DonationRouter = require("./routes/donations");
+
  app.use("/centers", CenterRouter);
  app.use("/users", UserRouter);
+ app.use("/donations", DonationRouter);
  
  // route our app
  app.get('/', function(req, res) {
