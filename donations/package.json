@@ -1,7 +1,7 @@
 {
-  "name": "care-club-backend",
+  "name": "care-club-backend-donations",
   "version": "1.0.0",
-  "description": "Backend for Care club Application",
+  "description": "Backend for CareClub",
   "main": "index.js",
   "scripts": {
     "test": "npm start",
@@ -10,11 +10,10 @@
   "author": "AWSAPU Team",
   "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
     "express": "^4.17.1",
     "mysql2": "^2.2.5",
-    "nodemon": "^2.0.12",
     "sequelize": "^6.6.5",
-    "sequelize-cli": "^6.2.0"
+    "uniqid": "^5.3.0",
+    "uuid": "^8.3.2"
   }
 }
