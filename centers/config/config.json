@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "root",
-    "password": "7666147ar",
+    "password": "*********",
     "database": "careclub_schema",
     "host": "127.0.0.1",
     "dialect": "mysql"
