@@ -2,10 +2,10 @@ const express = require("express");
 const haversine = require("haversine-distance");
 const router = express.Router();
 
-const { Center, Donation } = require("../models");
+const { Centers, Donations } = require("../models");
 
 async function createCenter(body) {
-  const newCenter = await Center.create({
+  const newCenter = await Centers.create({
     name: body.name,
     description: body.description,
     address: body.address,
@@ -25,7 +25,7 @@ async function createCenter(body) {
 }
 
 async function checkCenterExists(name, email) {
-  const findCenterbyEmail = await Center.findOne({
+  const findCenterbyEmail = await Centers.findOne({
     where: {
       name: name,
       email: email,
@@ -35,7 +35,7 @@ async function checkCenterExists(name, email) {
 }
 
 async function getCenter(params) {
-  const data = await Center.findOne({
+  const data = await Centers.findOne({
     where: {
       id: params.id,
     },
@@ -49,7 +49,7 @@ async function getCenter(params) {
 }
 
 async function updateCenter(body) {
-  await Center.update(
+  await Centers.update(
     {
       name: body.name,
       description: body.description,
@@ -73,7 +73,7 @@ async function updateCenter(body) {
 }
 
 async function deleteCenter(body) {
-  await Center.destroy({
+  await Centers.destroy({
     where: {
       id: body.id,
     },
@@ -85,7 +85,7 @@ async function deleteCenter(body) {
 }
 
 async function getAllCenters() {
-  const data = await Center.findAll().catch((err) => {
+  const data = await Centers.findAll().catch((err) => {
     if (err) {
       console.log(err);
     }
@@ -107,7 +107,7 @@ async function getAllCenters() {
 }
 
 async function getCenterDonations(params) {
-  const donations = await Donation.findAndCountAll({
+  const donations = await Donations.findAndCountAll({
     where: {
       centerId: params.id,
     },
@@ -121,7 +121,7 @@ async function getCenterDonations(params) {
 }
 
 async function getCenterDonors(params) {
-  const donorsCount = await Donation.count({
+  const donorsCount = await Donations.count({
     where: {
       centerId: params.id,
     },
