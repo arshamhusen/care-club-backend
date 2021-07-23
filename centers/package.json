@@ -59,6 +59,7 @@
     "glob": "^7.1.7",
     "graceful-fs": "^4.2.6",
     "has": "^1.0.3",
+    "haversine-distance": "^1.2.1",
     "http-errors": "^1.7.2",
     "iconv-lite": "^0.4.24",
     "inflection": "^1.13.1",

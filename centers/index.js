@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 8082;
+const port = process.env.PORT || 3001;
 
 // Models and Database
 const db = require("./models");
@@ -18,4 +18,4 @@ db.sequelize.sync().then((req) => {
 
 //Routers
 const CentersRouter = require("./routes/centers");
-app.use("/centers", CentersRouter);
+app.use("/api/centers", CentersRouter);

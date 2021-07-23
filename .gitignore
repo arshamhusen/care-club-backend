@@ -1,3 +1,4 @@
 centers/node_modules
 donations/node_modules
 users/node_modules
+credentials.env
