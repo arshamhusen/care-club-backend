@@ -1,39 +1,41 @@
 module.exports = (sequelize, DataTypes) => {
-    const Donation = sequelize.define("Donation", {
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        description: {
-            type: DataTypes.STRING,
-            // allowNull: false,
-        },
-        isPerishable: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
-        },
-        quantity: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        status: {
-            type: DataTypes.STRING, //STRING or ENUM?
-            allowNull: false
-        }
-    })
+  const Donations = sequelize.define("Donations", {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    category: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  });
 
-    Donation.associate = models => {
-        Donation.belongsTo(models.User, {
-            foreignKey: "userId",
-        })
-        Donation.belongsTo(models.Center, {
-            foreignKey: "centerId",
-        })
-    }
+  Donations.associate = (models) => {
+    Donations.belongsTo(models.Users, {
+      foreignKey: "UserId",
+    });
+    Donations.belongsTo(models.Centers, {
+      foreignKey: "CenterId",
+    });
+    Donations.hasMany(models.DonationsMedia, {
+      foreignKey: "DonationId",
+    });
+  };
 
-    return Donation;
-}
+  return Donations;
+};

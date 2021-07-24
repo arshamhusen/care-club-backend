@@ -1,12 +1,9 @@
-const { v1: uuidv1 } = require("uuid");
-
 module.exports = (sequelize, DataTypes) => {
   const Users = sequelize.define("Users", {
     uuid: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      defaultValue: uuidv1().toString(),
     },
     firstName: {
       type: DataTypes.STRING,
@@ -29,17 +26,13 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-    // password: {
-    //   type: DataTypes.STRING,
-    //   allowNull: false,
-    //   validate: {
-    //     notEmpty: true,
-    //   },
-    // },
     phone: {
       type: DataTypes.STRING,
     },
     address: {
+      type: DataTypes.STRING,
+    },
+    profileImg: {
       type: DataTypes.STRING,
     },
     // isVerified: {

@@ -1,3 +1,4 @@
+const route = require("color-convert/route");
 const express = require("express");
 const haversine = require("haversine-distance");
 const router = express.Router();
@@ -11,10 +12,11 @@ async function createCenter(body) {
     address: body.address,
     latitude: body.latitude,
     longitude: body.longitude,
+    phone: body.phone,
     email: body.email,
-    password: body.password,
-    profileImg: body.profileImg,
-    docURI: body.docURI,
+    profileImgURI: body.profileImgURI,
+    verificationDocURI: body.verificationDocURI,
+    isEmailVerified: body.isEmailVerified,
   }).catch((err) => {
     if (err) {
       console.log(err);
@@ -56,8 +58,8 @@ async function updateCenter(body) {
       address: body.address,
       latitude: body.latitude,
       longitude: body.longitude,
+      phone: body.phone,
       email: body.email,
-      password: body.password,
       profileImg: body.profileImg,
     },
     {
@@ -101,6 +103,8 @@ async function getAllCenters() {
       title: center.name,
       description: center.description,
       image: center.profileImg,
+      phone: center.phone,
+      email: center.email,
     };
   });
 
@@ -171,6 +175,10 @@ router.route("/all").get(async (req, res, next) => {
   res.send(result);
 });
 
+// router.post("/allByLocations", async (req, res) => {
+//   const centers = await getAllCenters();
+// });
+
 // Get center Screen information
 router.route("/centerProfileInfo/:id").get(async (req, res) => {
   const CenterInfo = await getCenter(req.params);
@@ -194,13 +202,13 @@ router.route("/centerProfileInfo/:id").get(async (req, res) => {
   }
 });
 
-router.route("/mapFilterDistance").post(async (req, res) => {
-  const { latitude, longitude} = req.body;
+router.route("/centersFilterDistance").post(async (req, res) => {
+  const { latitude, longitude } = req.body;
   const userCoords = { lat: latitude, lng: longitude };
   const allCenters = await getAllCenters();
 
   // TODO: Expand range if no centers is found
-  const nearbyRange = 12; // Should be also coming from the front end - as users will have the choice of changing it.
+  const nearbyRange = 8; // Should be also coming from the front end - as users will have the choice of changing it.
   let centersNearby = [];
 
   for (center of allCenters) {

@@ -10,6 +10,7 @@
     "ansi-styles": "^3.2.1",
     "any-promise": "^1.3.0",
     "array-flatten": "^1.1.1",
+    "aws-serverless-express": "^3.4.0",
     "balanced-match": "^1.0.2",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
@@ -154,8 +155,14 @@
   },
   "scripts": {
     "test": "npm start",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "init-claudia": "claudia generate-serverless-express-proxy --express-module index",
+    "create-api": "claudia create --handler lambda.handler --deploy-proxy-api --region ap-southeast-1",
+    "update-api": "claudia update --source"
   },
   "author": "AWSAPU Team",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "claudia": "^5.13.1"
+  }
 }

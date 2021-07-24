@@ -1,58 +1,72 @@
-const { v1: uuidv1 } = require("uuid")
-
 module.exports = (sequelize, DataTypes) => {
-    const Center = sequelize.define("Center", {
-      uuid: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        primaryKey: true,
-        defaultValue: uuidv1().toString()
+  const Centers = sequelize.define("Centers", {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
       },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true
-        }
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
       },
-      address: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true
-        }
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
       },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true
-        }
+    },
+    latitude: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    longitude: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
       },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true
-        }
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
       },
-      isEmailVerified: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-      },
-      isDocsVerified: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
-      }
-    });
-  
-    Center.associate = models => {
-      Center.hasMany(models.Donation, {
-        onDelete: "cascade",
-        foreignKey: "centerId"
-      })
-    }
+    },
+    profileImgURI: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    verificationDocURI: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    isEmailVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    isDocsVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+  });
 
-    return Center;
+  Centers.associate = (models) => {
+    Centers.hasMany(models.Donations, {
+      onDelete: "cascade",
+      foreignKey: "CenterId",
+    });
   };
-  
+
+  return Centers;
+};

@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define("User", {
-    id: {
+  const Users = sequelize.define("Users", {
+    uuid: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
@@ -26,13 +26,6 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
-    },
     phone: {
       type: DataTypes.STRING,
     },
@@ -42,23 +35,22 @@ module.exports = (sequelize, DataTypes) => {
     profileImg: {
       type: DataTypes.STRING,
     },
-    isVerified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
+    // isVerified: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: false,
+    // },
     points: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    // TODO: need to add hash salt attribute
   });
 
-  // User.associate = models => {
-  //     User.hasMany(models.Donation, {
-  //         onDelete: "cascade",
-  //         foreignKey: "userId"
-  //     })
-  // }
+  Users.associate = (models) => {
+    Users.hasMany(models.Donations, {
+      onDelete: "cascade", //should cascade or not? Should be because without foreign key there is no access either way
+      foreignKey: "UserId",
+    });
+  };
 
-  return User;
+  return Users;
 };

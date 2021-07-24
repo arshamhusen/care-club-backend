@@ -29,6 +29,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.FLOAT,
       allowNull: false,
     },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -36,15 +43,13 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-    password: {
+    profileImgURI: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
     },
-    profileImg: {
+    verificationDocURI: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     isEmailVerified: {
       type: DataTypes.BOOLEAN,
