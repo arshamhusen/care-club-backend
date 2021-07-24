@@ -6,11 +6,6 @@ const { User } = require("../models");
 const saltrounds = 10;
 
 async function createUser(body) {
-  // TODO
-  // Check if the user exists - use all the params
-  // If the user exist update the current users with the values sent
-  // Add Hashing using Bcrypt for the password
-  // During registration change is Verified to true
   const newUser = await User.create({
     id: uuidv1().toString(),
     firstName: body.firstName,
@@ -145,9 +140,5 @@ router.route("/verify").post(async (req, res, next) => {
   const result = await getUser(req.body);
   res.status(200).send(result);
 });
-
-// TODOs:
-// 1. Change Phone Number - Cognito Integrated
-// 2. Change Password - Cognito Integrated
 
 module.exports = router;

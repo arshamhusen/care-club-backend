@@ -1,4 +1,5 @@
 centers/node_modules
 donations/node_modules
 users/node_modules
+volunteers/node_modules
 credentials.env
