@@ -97,6 +97,7 @@ async function getAllCenters() {
         latitude: center.latitude,
         longitude: center.longitude,
       },
+      address: center.address,
       title: center.name,
       description: center.description,
       image: center.profileImg,
@@ -152,7 +153,7 @@ router.route("/profile").get(async (req, res, next) => {
 });
 
 //Updates center details
-router.route("/update").post(async (req, res, next) => {
+router.route("/update").put(async (req, res, next) => {
   await updateCenter(req.body);
   const result = await getCenter(req.body);
   res.status(200).send(result);
@@ -193,8 +194,9 @@ router.route("/centerProfileInfo/:id").get(async (req, res) => {
   }
 });
 
-router.route("/mapFilterDistance").get(async (req, res) => {
-  const userCoords = { lat: req.body.latitude, lng: req.body.longitude };
+router.route("/mapFilterDistance").post(async (req, res) => {
+  const { latitude, longitude} = req.body;
+  const userCoords = { lat: latitude, lng: longitude };
   const allCenters = await getAllCenters();
 
   // TODO: Expand range if no centers is found
