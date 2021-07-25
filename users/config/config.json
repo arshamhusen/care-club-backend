@@ -1,9 +1,10 @@
 {
   "development": {
-    "username": "root",
-    "password": "*********",
+    "username": "admin",
+    "password": "awsapu123",
     "database": "careclub_schema",
-    "host": "127.0.0.1",
+    "host": "care-club-db1.chlvekamioyz.ap-southeast-1.rds.amazonaws.com",
+    "port": "3306",
     "dialect": "mysql"
   },
   "test": {

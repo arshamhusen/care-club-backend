@@ -1,54 +1,51 @@
 const express = require("express");
 const { v1: uuidv1 } = require("uuid");
 const router = express.Router();
-const bcrypt = require("bcrypt");
-const { User } = require("../models");
-const saltrounds = 10;
+const { Users } = require("../models");
 
 async function createUser(body) {
-  const newUser = await User.create({
-    id: uuidv1().toString(),
+  const newUser = await Users.create({
+    uuid: uuidv1().toString(),
     firstName: body.firstName,
     lastName: body.lastName,
     email: body.email,
-    password: hashedPassword,
     phone: body.phone,
     address: body.address,
+    profileImg: body.profileImg,
   }).catch((err) => {
     if (err) {
       console.log(err);
     }
   });
-
   return newUser;
 }
 
-async function getUser(params) {
-  const data = await User.findAll({
+async function getUser(id) {
+  const data = await Users.findAll({
     where: {
-      id: params.id,
+      uuid: id,
     },
   }).catch((err) => {
     if (err) {
       console.log(err);
     }
   });
-
   return data;
 }
 
-async function updateUser(body) {
-  await User.update(
+async function updateUser(uuid, data) {
+  Users.update(
     {
-      email: body.email,
-      password: body.password,
-      phone: body.phone,
-      address: body.address,
-      profileImg: body.profileImg,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      address: data.address,
+      profileImg: data.profileImg,
     },
     {
       where: {
-        id: body.id,
+        uuid: uuid,
       },
     }
   ).catch((err) => {
@@ -58,20 +55,22 @@ async function updateUser(body) {
   });
 }
 
-async function deleteUser(body) {
-  await User.destroy({
+async function deleteUser(id) {
+  const result = await Users.destroy({
     where: {
-      id: body.id,
+      uuid: id,
     },
   }).catch((err) => {
     if (err) {
       console.log(err);
     }
   });
+
+  return result;
 }
 
 async function getAllUsers() {
-  const data = await User.findAll().catch((err) => {
+  const data = await Users.findAll().catch((err) => {
     if (err) {
       console.log(err);
     }
@@ -83,8 +82,21 @@ async function getAllUsers() {
   return res;
 }
 
+async function updatePhone(userId, phone) {
+  Users.update(
+    {
+      phone: phone,
+    },
+    {
+      where: {
+        uuid: userId,
+      },
+    }
+  );
+}
+
 async function verifyUser(body) {
-  User.update(
+  Users.update(
     {
       isVerified: true,
     },
@@ -100,32 +112,55 @@ async function verifyUser(body) {
   });
 }
 
+async function checkUserExists(data) {
+  const result = await Users.findOne({
+    where: {
+      email: data.email,
+    },
+  });
+
+  return result;
+}
+
 //Inserts new user details into database
 router.route("/create").post(async (req, res, next) => {
-  const result = await createUser(req.body);
-  res.status(200).send(result);
+  const userExists = await checkUserExists(req.body);
+  if (!userExists) {
+    const userCreated = await createUser(req.body);
+    userCreated
+      ? res.status(200).send({
+          message: `${userCreated.firstName} was resgistered successfully. Please proceed with email verification`,
+        })
+      : res
+          .status(404)
+          .send({ error: "There was an error registering the user" });
+  } else {
+    res.status(404).send({
+      error: `There is already an account under ${userExists.email}!`,
+    });
+  }
 });
-
-//Retrieves specific user details from database
-//TODO: Hide sensitive data such as id and password as these data are only used for backend
 
 // User params in get requests instead of using body - I have changed it
 router.route("/profile/:id").get(async (req, res, next) => {
-  const result = await getUser(req.params);
-  res.send(result[0]);
+  const getUserInfo = await getUser(req.params.id);
+  getUserInfo
+    ? res.status(200).send(getUserInfo)
+    : res.status(404).send({
+        error: "There was an error retrieving the information for the user",
+      });
 });
 
 //Updates user details
-router.route("/update").post(async (req, res, next) => {
-  await updateUser(req.body);
-  const result = await getUser(req.body);
-  res.status(200).send(result);
+router.route("/update/:id").put(async (req, res, next) => {
+  const userUpdated = await updateUser(req.params.id, req.body);
+  res.status(200).send({ message: "The user was updated successfully" });
 });
 
 //Deletes user from database
-router.route("/delete").delete(async (req, res, next) => {
-  await deleteUser(req.body);
-  res.status(200).send("User successfully removed.");
+router.route("/delete/:id").delete(async (req, res, next) => {
+  const userDeleted = await deleteUser(req.params.id);
+  res.status(200).send({ message: "User successfully removed." });
 });
 
 //Gets all users existing from database
@@ -134,11 +169,15 @@ router.route("/all").get(async (req, res, next) => {
   res.send(result);
 });
 
-//Verifies user -> Changes isVerified value to true
-router.route("/verify").post(async (req, res, next) => {
-  await verifyUser(req.body);
-  const result = await getUser(req.body);
-  res.status(200).send(result);
+// Change user phone number
+// Upload a profile picture
+router.route("/updatePhone/:id").post(async (req, res, next) => {
+  const updateUserPhone = updatePhone(req.params.id, req.body.phone);
+  updateUserPhone
+    ? res.status(200).send({ message: "Phone number was updated successfully" })
+    : res
+        .status(404)
+        .send({ error: "There was an error updatinng the phone number" });
 });
 
 module.exports = router;

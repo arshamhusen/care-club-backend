@@ -1,0 +1,10 @@
+{
+  "lambda": {
+    "role": "care-club-backend-users-executor",
+    "name": "care-club-backend-users",
+    "region": "ap-southeast-1"
+  },
+  "api": {
+    "id": "us9e0nkw4k"
+  }
+}

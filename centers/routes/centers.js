@@ -3,7 +3,7 @@ const express = require("express");
 const haversine = require("haversine-distance");
 const router = express.Router();
 
-const { Centers, Donations } = require("../models");
+const { Centers, Donations, Volunteers } = require("../models");
 
 async function createCenter(body) {
   const newCenter = await Centers.create({
@@ -60,7 +60,9 @@ async function updateCenter(body) {
       longitude: body.longitude,
       phone: body.phone,
       email: body.email,
-      profileImg: body.profileImg,
+      profileImgURI: body.profileImgURI,
+      verificationDocURI: body.verificationDocURI,
+      isEmailVerified: body.isEmailVerified,
     },
     {
       where: {
@@ -74,10 +76,10 @@ async function updateCenter(body) {
   });
 }
 
-async function deleteCenter(body) {
+async function deleteCenter(params) {
   await Centers.destroy({
     where: {
-      id: body.id,
+      id: params.id,
     },
   }).catch((err) => {
     if (err) {
@@ -102,9 +104,12 @@ async function getAllCenters() {
       address: center.address,
       title: center.name,
       description: center.description,
-      image: center.profileImg,
+      image: center.profileImgURI,
+      verificationDoc: center.verificationDocURI,
       phone: center.phone,
       email: center.email,
+      joinedDate: center.createdAt,
+      updatedDate: center.updatedAt,
     };
   });
 
@@ -137,6 +142,16 @@ async function getCenterDonors(params) {
   return donorsCount;
 }
 
+async function getCenterVolunteers(params) {
+  const volunteersCount = await Volunteers.count({
+    where: {
+      CenterId: params.id,
+    },
+  });
+
+  return volunteersCount;
+}
+
 //Inserts new center into database
 router.route("/create").post(async (req, res, next) => {
   const checkIfExist = await checkCenterExists(req.body.name, req.body.email);
@@ -156,17 +171,29 @@ router.route("/profile").get(async (req, res, next) => {
   res.send(result);
 });
 
-//Updates center details
+//Updates center details ---> Needs to be fixed
 router.route("/update").put(async (req, res, next) => {
-  await updateCenter(req.body);
+  const updateCenterInfo = await updateCenter(req.body);
   const result = await getCenter(req.body);
-  res.status(200).send(result);
+  updateCenterInfo
+    ? res.status(200).json({
+        message: `${req.body.name} was updated successfully!`,
+        result: result,
+      })
+    : res
+        .status(404)
+        .json({ error: "There was an error updating the center information" });
 });
 
-//Deletes center from database
-router.route("/delete").delete(async (req, res, next) => {
-  await deleteCenter(req.body);
-  res.status(200).send("Center successfully removed.");
+//Deletes center from database ---> Needs to be fixed
+router.route("/delete/:id").delete(async (req, res, next) => {
+  const deleteCenterData = await deleteCenter(req.params);
+  const center = await getCenter(req.params);
+  deleteCenterData
+    ? res
+        .status(200)
+        .send({ message: `${center.name} was deleted successfully!` })
+    : res.status(404).json({ error: "There was an error deleting the center" });
 });
 
 //Gets all existing centers (Used for map function)
@@ -185,20 +212,17 @@ router.route("/centerProfileInfo/:id").get(async (req, res) => {
   if (CenterInfo) {
     const centerDonations = await getCenterDonations(req.params);
     const centerDonors = await getCenterDonors(req.params);
+    const centerVolunteers = await getCenterVolunteers(req.params);
 
     const centerProfileData = {
-      centerName: CenterInfo.name,
-      centerDescription: CenterInfo.description,
-      centerAddress: CenterInfo.address,
-      centerIsVerified: CenterInfo.centerIsVerified,
-      centerProfileImg: CenterInfo.profileImg,
       centerDonationCount: centerDonations.count,
       centerDonorCount: centerDonors,
+      centerVolunteersCount: centerVolunteers,
     };
 
     res.json(centerProfileData);
   } else {
-    res.status(404).json("Something went wrong");
+    res.status(404).json("{ message: Something went wrong}");
   }
 });
 
@@ -224,6 +248,15 @@ router.route("/centersFilterDistance").post(async (req, res) => {
   }
 
   res.json(centersNearby);
+});
+
+router.route("/center/:id").get(async (req, res) => {
+  const result = await getCenter(req.params);
+  result
+    ? res.status(200).json(result)
+    : res
+        .status(404)
+        .json({ error: "There was a problem finding the center information!" });
 });
 
 module.exports = router;
