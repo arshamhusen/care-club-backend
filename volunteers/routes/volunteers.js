@@ -50,8 +50,10 @@ router.route("/user/:id").get(async (req, res, next) => {
         CenterId: userIsAVolunteer.CenterId,
       },
     });
-    res.status(200).send({ isVerified: true });
+    res.status(200).send({ isVerified: true, DonationsData: showAllDonations });
   }
 });
+
+
 
 module.exports = router;
