@@ -1,7 +1,7 @@
 const express = require("express");
 const { v1: uuidv1 } = require("uuid");
 const router = express.Router();
-const { User, Volunteers, Donations, Centers } = require("../models");
+const { Users, Volunteers, Donations, Centers } = require("../models");
 
 async function createVolunteer(volunteerData) {
   const newVolunteer = await Volunteers.create({
@@ -54,6 +54,7 @@ router.route("/user/:id").get(async (req, res, next) => {
     const showAllDonations = await Donations.findAll({
       where: {
         CenterId: userIsAVolunteer.CenterId,
+        status: "Accepted"
       },
     });
     const centerInfo = await Centers.findOne({
@@ -72,12 +73,48 @@ router.route("/user/:id").get(async (req, res, next) => {
 });
 
 // When donation is accepted by the center --> Accepted
+router.route("/acceptDonation/:id").post(async (req, res, next) => {
+  const DonationId = req.params.id;
+  const { volunteerId } = req.body;
+  const acceptDonation = await Donations.update(
+    {
+      status: "Accepted",
+      VolunteerId: volunteerId,
+    },
+    {
+      where: {
+        id: DonationId,
+      },
+    }
+  );
+
+  acceptDonation
+    ? res.status(200).send({ message: "OK" })
+    : res.json(404).send({ error: "An error occured" });
+});
 
 // When donation is rejected by the center --> Rejected
+router.route("/rejectDonation/:id").post(async (req, res, next) => {
+  const DonationId = req.params.id;
+  const rejectDonation = await Donations.update(
+    {
+      status: "Rejected",
+    },
+    {
+      where: {
+        id: DonationId,
+      },
+    }
+  );
+
+  rejectDonation
+    ? res.status(200).send({ message: "OK" })
+    : res.json(404).send({ error: "An error occured" });
+});
 
 // When Volunteer Selects a donation Pickup
 
-router.route("/acceptDonation/:id").post(async (req, res, next) => {
+router.route("/toPickupDonation/:id").post(async (req, res, next) => {
   const DonationId = req.params.id;
   const { volunteerId } = req.body;
   const acceptDonation = await Donations.update(
@@ -133,6 +170,26 @@ router.route("/dropOffDonation/:id").post(async (req, res, next) => {
   );
 
   // Make a function which add 20 points in the point table - take the volunteer id, find user Id and add 20 points to the table
+    const volunteerProfile = await Volunteers.findOne({
+      where: {
+        uuid: volunteerId
+      }
+    });
+
+    const userProfile = await Users.findOne({
+      where: {
+        uuid: volunteerProfile.UserId
+      }
+    });
+
+    await Users.update({
+      points: userProfile.points += 20
+    }, {
+      where: {
+        uuid: volunteerProfile.UserId
+      }
+    });
+
 
   acceptDonation
     ? res.status(200).send({ message: "OK" })
