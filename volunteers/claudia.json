@@ -1,0 +1,10 @@
+{
+  "lambda": {
+    "role": "volunteers-executor",
+    "name": "volunteers",
+    "region": "ap-southeast-1"
+  },
+  "api": {
+    "id": "wj7jbb066j"
+  }
+}

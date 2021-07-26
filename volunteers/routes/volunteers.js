@@ -4,8 +4,8 @@ const router = express.Router();
 const { User, Volunteers, Donations, Centers } = require("../models");
 
 async function createVolunteer(volunteerData) {
-  User.create({
-    id: uuidv1().toString(),
+  const newVolunteer = await Volunteers.create({
+    uuid: uuidv1().toString(),
     verificationType: volunteerData.verificationType,
     verificationDocURI: volunteerData.verificationDocURI,
     verificationPhotoURI: volunteerData.verificationPhotoURI,
@@ -20,6 +20,7 @@ async function createVolunteer(volunteerData) {
       console.log(err);
     }
   });
+  return newVolunteer;
 }
 
 //Inserts new user details into database
@@ -28,6 +29,11 @@ router.route("/create").post(async (req, res, next) => {
   volunteerCreated
     ? res.status(200).send({ message: "Success" })
     : res.status(404).send({ message: "There was an error" });
+});
+
+router.route("/all").get(async (req, res, next) => {
+  const findAllVolunteers = await Volunteers.findAll();
+  res.status(200).send(findAllVolunteers);
 });
 
 // UseEffect Screen render - Check volunteer status
@@ -50,10 +56,87 @@ router.route("/user/:id").get(async (req, res, next) => {
         CenterId: userIsAVolunteer.CenterId,
       },
     });
-    res.status(200).send({ isVerified: true, DonationsData: showAllDonations });
+    const centerInfo = await Centers.findOne({
+      where: {
+        id: userIsAVolunteer.CenterId,
+      },
+    });
+    // Get the location of the user for each donation and pass it in the response - mapped array
+    res.status(200).send({
+      isVerified: true,
+      DonationsData: showAllDonations,
+      CenterName: centerInfo.name,
+      VolunteerId: userIsAVolunteer.id,
+    });
   }
 });
 
+// When donation is accepted by the center --> Accepted
 
+// When donation is rejected by the center --> Rejected
+
+// When Volunteer Selects a donation Pickup
+
+router.route("/acceptDonation/:id").post(async (req, res, next) => {
+  const DonationId = req.params.id;
+  const { volunteerId } = req.body;
+  const acceptDonation = await Donations.update(
+    {
+      status: "On the way to pick up",
+      VolunteerId: volunteerId,
+    },
+    {
+      where: {
+        id: DonationId,
+      },
+    }
+  );
+
+  acceptDonation
+    ? res.status(200).send({ message: "OK" })
+    : res.json(404).send({ error: "failed" });
+});
+
+// When volunteer picks up the donations
+
+router.route("/pickUpDonation/:id").post(async (req, res, next) => {
+  const DonationId = req.params.id;
+  const acceptDonation = await Donations.update(
+    {
+      status: "Picked up",
+    },
+    {
+      where: {
+        id: DonationId,
+      },
+    }
+  );
+
+  acceptDonation
+    ? res.status(200).send({ message: "OK" })
+    : res.json(404).send({ error: "failed" });
+});
+
+// When volunteer drops off the donations
+router.route("/dropOffDonation/:id").post(async (req, res, next) => {
+  const DonationId = req.params.id;
+  const { volunteerId } = req.body;
+  const acceptDonation = await Donations.update(
+    {
+      status: "Completed",
+    },
+    {
+      where: {
+        id: DonationId,
+      },
+    }
+  );
+
+  // Make a function which add 20 points in the point table - take the volunteer id, find user Id and add 20 points to the table
+
+  acceptDonation
+    ? res.status(200).send({ message: "OK" })
+    : res.json(404).send({ error: "failed" });
+});
 
 module.exports = router;
