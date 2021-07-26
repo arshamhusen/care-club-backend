@@ -9,11 +9,11 @@ async function createDonation(body) {
     id: uuidv4().toString(),
     name: body.name,
     description: body.description,
-    isPerishable: body.isPerishable,
+    category: body.category,
     quantity: body.quantity,
     status: body.status,
-    centerId: body.centerId,
-    userId: body.userId,
+    CenterId: body.CenterId,
+    UserId: body.UserId,
   };
 
   const data = await Donation.create(donation).catch((error) => {
