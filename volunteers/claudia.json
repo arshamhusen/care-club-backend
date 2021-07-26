@@ -1,10 +1,10 @@
 {
   "lambda": {
-    "role": "volunteers-executor",
-    "name": "volunteers",
+    "role": "care-club-backend-volunteers-executor",
+    "name": "care-club-backend-volunteers",
     "region": "ap-southeast-1"
   },
   "api": {
-    "id": "wj7jbb066j"
+    "id": "ulh1wttlpl"
   }
 }

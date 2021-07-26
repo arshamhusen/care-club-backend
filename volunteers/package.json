@@ -1,10 +1,11 @@
 {
-  "name": "volunteers",
+  "name": "care-club-backend-volunteers",
   "version": "1.0.0",
-  "description": "This is for the volunteers",
+  "description": "Lambda function to manage volunteers",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js",
     "init-claudia": "claudia generate-serverless-express-proxy --express-module index",
     "create-api": "claudia create --handler lambda.handler --deploy-proxy-api --region ap-southeast-1",
     "update-api": "claudia update --source"

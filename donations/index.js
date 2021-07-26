@@ -18,4 +18,4 @@ db.sequelize.sync().then((req) => {
 
 //Routers
 const DonationsRouter = require("./routes/donations");
-app.use("/donations", DonationsRouter);
+app.use("/api/donations", DonationsRouter);
