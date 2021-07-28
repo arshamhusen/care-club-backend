@@ -180,4 +180,14 @@ router.route("/updatePhone/:id").post(async (req, res, next) => {
         .send({ error: "There was an error updatinng the phone number" });
 });
 
+// login function
+router.route("/loginGetInfo").post(async (req, res, next) => {
+  const userInfo = await Users.findOne({
+    where: {
+      email: req.body.email,
+    },
+  });
+  res.status(200).send(userInfo);
+});
+
 module.exports = router;

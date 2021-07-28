@@ -101,6 +101,7 @@ async function getAllCenters() {
         latitude: center.latitude,
         longitude: center.longitude,
       },
+      id: center.id,
       address: center.address,
       title: center.name,
       description: center.description,

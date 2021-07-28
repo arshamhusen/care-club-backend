@@ -44,6 +44,7 @@ router.route("/user/:id").get(async (req, res, next) => {
       UserId: UserId,
     },
   });
+
   if (!userIsAVolunteer) {
     res.status(404).send({ error: "User is not a volunteer" });
   } else if (userIsAVolunteer.isVerified === false) {
@@ -51,23 +52,44 @@ router.route("/user/:id").get(async (req, res, next) => {
       isVerified: false,
     });
   } else {
+    // User Info for each donation + donation details
+
+    const userIdArray = []; // users who donated
+
     const showAllDonations = await Donations.findAll({
       where: {
         CenterId: userIsAVolunteer.CenterId,
-        status: "Accepted"
+        status: "Accepted",
       },
     });
+    showAllDonations.map((donation) => {
+      userIdArray.push(donation.UserId);
+    });
+
+    // find those specifc users
+
+    const userInfoArray = [];
+
+    for (var i = 0; i < userIdArray.length; i++) {
+      const findtheUsersWhoDonated = await Users.findOne({
+        where: {
+          uuid: userIdArray[i],
+        },
+      });
+      userInfoArray.push(findtheUsersWhoDonated);
+    }
+
     const centerInfo = await Centers.findOne({
       where: {
         id: userIsAVolunteer.CenterId,
       },
     });
+
     // Get the location of the user for each donation and pass it in the response - mapped array
     res.status(200).send({
-      isVerified: true,
-      DonationsData: showAllDonations,
-      CenterName: centerInfo.name,
-      VolunteerId: userIsAVolunteer.id,
+      DonorsInfo: userInfoArray,
+      centerName: centerInfo.name,
+      DonationData: showAllDonations,
     });
   }
 });
@@ -79,7 +101,6 @@ router.route("/acceptDonation/:id").post(async (req, res, next) => {
   const acceptDonation = await Donations.update(
     {
       status: "Accepted",
-      VolunteerId: volunteerId,
     },
     {
       where: {
@@ -170,26 +191,28 @@ router.route("/dropOffDonation/:id").post(async (req, res, next) => {
   );
 
   // Make a function which add 20 points in the point table - take the volunteer id, find user Id and add 20 points to the table
-    const volunteerProfile = await Volunteers.findOne({
-      where: {
-        uuid: volunteerId
-      }
-    });
+  const volunteerProfile = await Volunteers.findOne({
+    where: {
+      uuid: volunteerId,
+    },
+  });
 
-    const userProfile = await Users.findOne({
-      where: {
-        uuid: volunteerProfile.UserId
-      }
-    });
+  const userProfile = await Users.findOne({
+    where: {
+      uuid: volunteerProfile.UserId,
+    },
+  });
 
-    await Users.update({
-      points: userProfile.points += 20
-    }, {
+  await Users.update(
+    {
+      points: (userProfile.points += 20),
+    },
+    {
       where: {
-        uuid: volunteerProfile.UserId
-      }
-    });
-
+        uuid: volunteerProfile.UserId,
+      },
+    }
+  );
 
   acceptDonation
     ? res.status(200).send({ message: "OK" })
