@@ -1,7 +1,7 @@
 const express = require("express");
 const { v1: uuidv1 } = require("uuid");
 const router = express.Router();
-const { Users } = require("../models");
+const { Users, Donations } = require("../models");
 
 async function createUser(body) {
   const newUser = await Users.create({
@@ -120,6 +120,18 @@ async function checkUserExists(data) {
   });
 
   return result;
+};
+
+async function getDonations(userId, status){
+  const result = await Donations.findAll({
+    where: {
+      UserId: userId,
+      status: status
+    }
+  });
+
+  const donations = result.map(donation => { return donation.dataValues; });
+  return donations;
 }
 
 //Inserts new user details into database
@@ -188,6 +200,26 @@ router.route("/loginGetInfo").post(async (req, res, next) => {
     },
   });
   res.status(200).send(userInfo);
+});
+
+router.get("/donations/accepted/:id", async (req, res) => {
+  const donations = await getDonations(req.params.id, "Accepted");
+  res.status(200).send({ message: donations });
+});
+
+router.get("/donations/pending/:id", async (req, res) => {
+  const donations = await getDonations(req.params.id, "Pending");
+  res.status(200).send({ message: donations });
+});
+
+router.get("/donations/rejected/:id", async (req, res) => {
+  const donations = await getDonations(req.params.id, "Rejected");
+  res.status(200).send({ message: donations });
+});
+
+router.get("/donations/completed/:id", async (req, res) => {
+  const donations = await getDonations(req.params.id, "Completed");
+  res.status(200).send({ message: donations });
 });
 
 module.exports = router;
