@@ -85,53 +85,60 @@ router.route("/user/:id").get(async (req, res, next) => {
       },
     });
 
+    const dataArray = [];
+
+    for (var i = 0; i < showAllDonations.length; i++) {
+      dataArray.push({
+        DonorsInfo: userInfoArray[i],
+        centerName: centerInfo.name,
+        DonationData: showAllDonations[i],
+        VolunteerId: userIsAVolunteer.uuid,
+      });
+    }
+
     // Get the location of the user for each donation and pass it in the response - mapped array
-    res.status(200).send({
-      DonorsInfo: userInfoArray,
-      centerName: centerInfo.name,
-      DonationData: showAllDonations,
-    });
+    res.status(200).send({ dataArray });
   }
 });
 
-// When donation is accepted by the center --> Accepted
-router.route("/acceptDonation/:id").post(async (req, res, next) => {
-  const DonationId = req.params.id;
-  const { volunteerId } = req.body;
-  const acceptDonation = await Donations.update(
-    {
-      status: "Accepted",
-    },
-    {
-      where: {
-        id: DonationId,
-      },
-    }
-  );
+// // When donation is accepted by the center --> Accepted
+// router.route("/acceptDonation/:id").post(async (req, res, next) => {
+//   const DonationId = req.params.id;
+//   const { volunteerId } = req.body;
+//   const acceptDonation = await Donations.update(
+//     {
+//       status: "Accepted",
+//     },
+//     {
+//       where: {
+//         id: DonationId,
+//       },
+//     }
+//   );
 
-  acceptDonation
-    ? res.status(200).send({ message: "OK" })
-    : res.json(404).send({ error: "An error occured" });
-});
+//   acceptDonation
+//     ? res.status(200).send({ message: "OK" })
+//     : res.json(404).send({ error: "An error occured" });
+// });
 
-// When donation is rejected by the center --> Rejected
-router.route("/rejectDonation/:id").post(async (req, res, next) => {
-  const DonationId = req.params.id;
-  const rejectDonation = await Donations.update(
-    {
-      status: "Rejected",
-    },
-    {
-      where: {
-        id: DonationId,
-      },
-    }
-  );
+// // When donation is rejected by the center --> Rejected
+// router.route("/rejectDonation/:id").post(async (req, res, next) => {
+//   const DonationId = req.params.id;
+//   const rejectDonation = await Donations.update(
+//     {
+//       status: "Rejected",
+//     },
+//     {
+//       where: {
+//         id: DonationId,
+//       },
+//     }
+//   );
 
-  rejectDonation
-    ? res.status(200).send({ message: "OK" })
-    : res.json(404).send({ error: "An error occured" });
-});
+//   rejectDonation
+//     ? res.status(200).send({ message: "OK" })
+//     : res.json(404).send({ error: "An error occured" });
+// });
 
 // When Volunteer Selects a donation Pickup
 
